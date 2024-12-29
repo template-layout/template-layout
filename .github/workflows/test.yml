@@ -21,3 +21,23 @@ jobs: # 작업에 대한 정의
               return; # 종료 
             }
 
+            const body = pull_request.body;
+            
+            if(!body) {
+              // PR 에 코멘트 추가.
+              await github.rest.issues.createCommon({
+                owner: context.repo.owner, // 저장소 소유자
+                repo: context.repo.repo, // 저장소 이름
+                issue_number: pull_request.number, // PR 번호
+                body: "가이드라인 미준수로 인해 PR이 자동으로 닫힙니다. \n 가이드라인을 준수하여 PR 재요청 부탁드립니다!", // 코멘트 내용 
+              });
+            
+              // PR 닫기
+              await github.rest.pulls.update({
+                owner: context.repo.owner, // 저장소 소유자
+                repo: context.repo.repo, // 저장소 이름
+                pull_number: pull_request.number, // PR 번호
+                state: "closed", // 자동으로 상태를 닫힘으로 변경한다.
+              });
+            }
+
