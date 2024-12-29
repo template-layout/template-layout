@@ -1,0 +1,23 @@
+name: Pull Request Check # 워크플로우 이름
+
+on: # 워크플로우 실행 트리거
+  pull_request: # PR 실행 될 때만 실행
+    types: [opened, synchronize] # 최초 시행, 업데이트 되었을 때 - PR 생성 or PR 업데이트 시
+
+
+jobs: # 작업에 대한 정의
+  check:
+    runs-on: ubuntu-latest # 우분투 최신 환경 시행
+    permission: # 권한 설정
+      pull_requests: write # PR 에 쓰기 권한을 설정 - github action 봇이 응답을 해 줄수 있어야 하기 때문이라고 함.
+    steps: # 실제 작업들 - 단계
+      - uses: actions/github-script@v7
+        with:
+          script: | # 스크립트 시작 표시
+            const pull_request = context.payload.pull_request; # PR 객체 가져오기
+            
+            if (pull_request === undefined) { # PR 이 없는 경우
+              console.log("This is not a pull request - 이는 PR 이 아닙니다."); # 내부 내용 출력
+              return; # 종료 
+            }
+
